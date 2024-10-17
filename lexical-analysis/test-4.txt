@@ -1,0 +1,6 @@
+# This is a test of the arrow token
+-
+Color(5)
+->
+Canvas()
+--

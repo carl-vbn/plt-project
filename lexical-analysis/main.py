@@ -27,6 +27,7 @@ def tokenize(string: str):
             
             if token_validators[token_type].is_valid_content(c, token_val):
                 token_val += c
+                print("token val is:", token_val)
                 index += 1
             else:
                 print(f'<{token_type}, "{token_val}">')
@@ -38,6 +39,7 @@ def tokenize(string: str):
             index += 1
             for typename, validator in token_validators.items():
                 if validator.is_valid_start(c):
+                    print(f"c:[{c}], typename:[{typename}]")
                     token_type = typename
                     break
             else: # I actually like that Python for loops have an else clause
