@@ -60,11 +60,11 @@ def tokenize(string: str):
                 print(f':: LEXICAL ERROR :: Invalid character: {c}')
                 continue
                 
-    if token_type is not None and token_type != "Arrow":
+    if token_type is not None:
         if token_type == 'LIT' and token_val[-1] != token_val[0]:
             print(':: LEXICAL ERROR :: Unterminated literal')
-        
-        print(f'<{token_type}, "{token_val}">')
+        if token_type != "Arrow":
+            print(f'<{token_type}, "{token_val}">')
 
 def main():
     if len(sys.argv) < 2:
