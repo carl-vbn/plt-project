@@ -11,8 +11,8 @@ def tokenize(string: str):
     while index < len(string):
         c = string[index]
         
-        if in_comment:
-            if c == '\n':
+        if c == '\n':
+            if in_comment:
                 in_comment = False
             index += 1
             continue
@@ -40,8 +40,14 @@ def tokenize(string: str):
                 if validator.is_valid_start(c):
                     token_type = typename
                     break
+            else: # I actually like that Python for loops have an else clause
+                print(f':: LEXICAL ERROR :: Invalid character: {c}')
+                continue
                 
     if token_type is not None:
+        if token_type == 'LIT' and token_val[-1] != token_val[0]:
+            print(':: LEXICAL ERROR :: Unterminated literal')
+        
         print(f'<{token_type}, "{token_val}">')
 
 def main():

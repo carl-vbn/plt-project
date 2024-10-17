@@ -24,6 +24,14 @@ token_validators = {
         is_valid_start=lambda c: c == ')',
         is_valid_content=lambda c, tc: False
     ),
+    'LBRACE': TokenValidator(
+        is_valid_start=lambda c: c == '{',
+        is_valid_content=lambda c, tc: False
+    ),
+    'RBRACE': TokenValidator(
+        is_valid_start=lambda c: c == '}',
+        is_valid_content=lambda c, tc: False
+    ),
     'COLON': TokenValidator(
         is_valid_start=lambda c: c == ':',
         is_valid_content=lambda c, tc: False
@@ -38,6 +46,6 @@ token_validators = {
     ),
     'LIT': TokenValidator(
         is_valid_start=lambda c: c == "'" or c == '"',
-        is_valid_content=lambda c, tc: len(tc) == 1 or tc[-1] != tc[0] or tc[-1] == '\\'
+        is_valid_content=lambda c, tc: len(tc) == 1 or tc[-1] != tc[0]
     )
 }
