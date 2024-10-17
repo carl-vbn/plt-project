@@ -2,6 +2,7 @@ import sys
 from tokens import token_validators
 
 def tokenize(string: str):
+    in_comment = False
     token_type = None
     token_val = None
     
@@ -10,10 +11,21 @@ def tokenize(string: str):
     while index < len(string):
         c = string[index]
         
+        if in_comment:
+            if c == '\n':
+                in_comment = False
+            index += 1
+            continue
+        
+        if c == '#':
+            in_comment = True
+            index += 1
+            continue
+        
         if token_type is not None:
             # Currently parsing token
             
-            if token_validators[token_type].is_valid_content(c):
+            if token_validators[token_type].is_valid_content(c, token_val):
                 token_val += c
                 index += 1
             else:
@@ -22,7 +34,8 @@ def tokenize(string: str):
                 token_val = None
         else:
             # New token
-            token_val = ''
+            token_val = c
+            index += 1
             for typename, validator in token_validators.items():
                 if validator.is_valid_start(c):
                     token_type = typename
