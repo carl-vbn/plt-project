@@ -1,5 +1,6 @@
+# Some random garbage within a program
 !@#$%%R
-Can$#!vas(wi":dth: 100, height: 100, length: 5) # 100x100 px canvas with an animation length of 5 seconds
+Can$!vas(wi":dth: 100, height: 100, length: 5) # 100x100 px canvas with an animation length of 5 seconds
     # Black background
     Fill(Solid('black'))
         Rectangle(width: 100, height: 100)
