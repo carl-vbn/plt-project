@@ -1,15 +1,17 @@
 # Lexical analysis
 
+## Finite State Machine Diagram
+![FSM](./FSM.png)
+
 ## Token types
-* Identifier (Id)
+* Identifier (ID)
 * Left parenthesis (LPAR)
 * Right parenthesis (RPAR)
 * Left brace (LBRACE)
 * Right brace (RBRACE)
-* Number (Num)
-* Colon
-* Comma
+* Number (NUM)
+* Colon (COLON)
+* Comma (COMMA)
 * Whitespace (WS)
-* Arrow
-* String Literal (Str)
-* New Line (NL)
+* Arrow 
+* String Literal (LIT)
