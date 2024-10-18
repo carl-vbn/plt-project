@@ -61,4 +61,11 @@ Straight with Python (if Python is installed and the interpreter is in PATH):
 
 ## Program Description
 * The main function opens the file passed in and passes the content text into tokenize()
-* 
+* tokenize() steps through the text character-by-character. 
+  * Lines 14-27 check if we are in a comment. If so, we don't parse this. 
+  * Lines 29-48 handle the case where we are in the middle of parsing a token. 
+    * 32-39: If the character is a valid element of the current token, add the character to the current token and increment the index. Arrows are special, since they are only two characters and the identified token can be printed immediately, the token terminated, and we move onto the next character. 
+    * 40-43: This handles the special case where we are in the middle of an arrow but the current character is not ">" as it should be. We print the detected error and terminate the token. 
+    * 44-48: For non-arrow tokens, reaching a non-valid character means that the previous token characters made up a valid token that can be printed. We print the identified token. 
+  * 49-59 are run when there is no current token. This happens after parsing an arrow or when an invalid character for a previous token is reached. It sets loop variables to indicate that we are now in a new token. Lines 57-59 throw the lexical error when the current character is not a valid starting character for any token. 
+  * Lines 61-67 run after the loop is done. This handles ending tokens. Since most tokens have been detected by the occurence of a following character not in the token, if the file ends on a valid token, we print it here. Arrows and string literals are special again, where the lack of the correct ending (a quote for literals, ">" for arrows) means we have an error. Thus, we also print to indicate these errors.
