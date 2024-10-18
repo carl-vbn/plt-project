@@ -46,11 +46,13 @@
 
 ## Installation
 With Docker: 
-1. Run `lexical-analysis % docker build --tag lexical-analyzer .` in this folder
-2. Run `docker run lexical-analyzer <input file name>`
+1. `cd` into this folder `lexical-analysis`
+2. Run `docker build --tag lexical-analyzer .` in this folder
+3. Run `docker run lexical-analyzer <input file name>`
 
 Straight with Python (if Python is installed and the interpreter is in PATH):
-1. Run `python main.py <input file name>` in this folder
+1. `cd` into this folder `lexical-analysis`
+2. Run `python main.py <input file name>` in this folder
 
 ## Test file names
 * `test.txt`: A properly formatted program
