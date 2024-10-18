@@ -21,10 +21,6 @@ def tokenize(string: str):
             index += 1
             continue
         
-        if in_comment:
-            index += 1
-            continue
-        
         if c == '#':
             in_comment = True
             index += 1
