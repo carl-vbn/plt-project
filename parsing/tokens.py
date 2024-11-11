@@ -12,9 +12,9 @@ token_validators = {
         is_valid_start=lambda c: c.isdigit(),
         is_valid_content=lambda c, tc: c.isdigit()
     ),
-    'WS': TokenValidator(
-        is_valid_start=lambda c: c == ' ',
-        is_valid_content=lambda c, tc: c == ' '
+    'INDENT': TokenValidator(
+        is_valid_start=lambda c: c == '\t' or c == ' ',
+        is_valid_content=lambda c, tc: c == ' ' and tc[-1] == ' ' and len(tc) <= 3
     ),
     'LPAR': TokenValidator(
         is_valid_start=lambda c: c == '(',

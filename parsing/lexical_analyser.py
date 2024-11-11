@@ -14,6 +14,12 @@ def tokenize(string: str):
         if c == '\n':
             if in_comment:
                 in_comment = False
+            
+            if token_type == 'INDENT':
+                # Ignore whitespace at the end of a line
+                token_type = None
+                token_val = None
+                
             index += 1
             continue
 
@@ -39,6 +45,10 @@ def tokenize(string: str):
                     continue
             elif token_type == "Arrow" and c != ">":
                 print(':: LEXICAL ERROR :: broken arrow')
+                token_type = None
+                token_val = None
+            elif token_type == "INDENT" and token_val != '\t' and len(token_val) != 4:
+                # Ignore this token, it's just whitespace, not indentation
                 token_type = None
                 token_val = None
             else:
