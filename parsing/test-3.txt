@@ -1,0 +1,4 @@
+# A broken arrow test
+Canvas(width: 50, height: 50, length: 10)
+    CircularPath(center: (50, 50), r: 35, start: 0, end: 360, length: 5) - (p)
+        Latex('\eval{p}', {p: p})
