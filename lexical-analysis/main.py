@@ -16,7 +16,7 @@ def tokenize(string: str):
                 in_comment = False
             index += 1
             continue
-        
+
         if in_comment:
             index += 1
             continue
@@ -32,11 +32,21 @@ def tokenize(string: str):
             if token_validators[token_type].is_valid_content(c, token_val):
                 token_val += c
                 index += 1
+                if token_type == "Arrow":
+                    print(f'<{token_type}, "{token_val}">')
+                    token_type = None
+                    token_val = None
+                    continue
+            elif token_type == "Arrow" and c != ">":
+                print(':: LEXICAL ERROR :: broken arrow')
+                token_type = None
+                token_val = None
             else:
                 print(f'<{token_type}, "{token_val}">')
                 token_type = None
                 token_val = None
-        else:
+                continue
+        if token_type is None:
             # New token
             token_val = c
             index += 1
@@ -51,8 +61,10 @@ def tokenize(string: str):
     if token_type is not None:
         if token_type == 'LIT' and token_val[-1] != token_val[0]:
             print(':: LEXICAL ERROR :: Unterminated literal')
-        
-        print(f'<{token_type}, "{token_val}">')
+        if token_type != "Arrow":
+            print(f'<{token_type}, "{token_val}">')
+        else:
+            print(':: LEXICAL ERROR :: broken arrow')
 
 def main():
     if len(sys.argv) < 2:
