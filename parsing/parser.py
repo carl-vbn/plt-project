@@ -209,7 +209,6 @@ def parse_node(token_stream: TokenStream):
         node.children.append(params_node)
     
     if token_stream.hasnext() and token_stream.peek().type == 'ARROW':
-        print('Found arrow')
         # Exports
         next(token_stream)
         expect(token_stream, 'LPAR')
