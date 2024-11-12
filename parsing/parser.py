@@ -45,7 +45,11 @@ def parse_token_repr(token_repr: str) -> Token:
     # Convert <type, "value"> to Token(type, value)
     token_repr = token_repr.lstrip('<').rstrip('>\n').split(',')
     token_type = token_repr[0].strip()
-    token_value = token_repr[1].strip()[1:-1] # Remove quotes
+    try:
+        token_value = token_repr[1].strip()[1:-1] # Remove quotes
+    except:
+        print("Lexical error!")
+        exit(0)
     
     return Token(token_type, token_value)
     
