@@ -53,8 +53,12 @@ def parse_token_repr(token_repr: str) -> Token:
 def read_token_stream() -> Generator[Token, None, None]:
     for line in sys.stdin:
         yield parse_token_repr(line.strip())
-        
+
 def next_indent_level(token_stream: TokenStream) -> int:    
+    '''
+    Returns the number of INDENT tokens in the stream and advances the stream to the next non-INDENT token
+    '''
+    
     indent_level = 0
     while token_stream.peek().type == 'INDENT':
         indent_level += 1
@@ -63,6 +67,10 @@ def next_indent_level(token_stream: TokenStream) -> int:
     return indent_level
 
 def get_indent_level(token_stream: TokenStream) -> int:
+    '''
+    Returns the number of INDENT tokens in the stream without advancing the stream
+    '''
+    
     return next_indent_level(token_stream.clone())
            
 def expect(token_stream: TokenStream, token_type: str):
@@ -73,6 +81,12 @@ def expect(token_stream: TokenStream, token_type: str):
     return token
 
 def parse_param_value(token_stream: TokenStream) -> Node:
+    '''
+    Parses the value of a parameter, like 5 or (1, 2, 3)
+    For named parameters, like width: 5, this is the value part (5)
+    For anonymous parameters, this is the entire parameter
+    '''
+    
     token = next(token_stream)
     if token.type == 'ID':
         # Param is new node
@@ -125,6 +139,10 @@ def parse_param_value(token_stream: TokenStream) -> Node:
         return Node(token.value)
 
 def parse_param(token_stream: TokenStream) -> Node:
+    '''
+    Parses a single parameter, like "hello" or width: 5
+    '''
+    
     node = Node('AnonymousParameter')
     token = next(token_stream)
 
@@ -150,6 +168,10 @@ def parse_param(token_stream: TokenStream) -> Node:
     return node
      
 def parse_params(token_stream: TokenStream) -> List[Node]:
+    '''
+    Parses a list of parameters, like (1, 2, 3) or (width: 5, height: 10)
+    '''
+    
     params = []
     
     expect(token_stream, 'LPAR')
@@ -170,8 +192,13 @@ def parse_params(token_stream: TokenStream) -> List[Node]:
             raise ParsingError(f'Expected COMMA or RPAR, got {next_token}')
     
     return params
-            
+
 def parse_node(token_stream: TokenStream):
+    '''
+    Parses a layer node, like Canvas(width: 100, height: 100) and its possible exports
+    Does not parse children (stops after one layer node)
+    '''
+    
     token = expect(token_stream, 'ID')
     node = Node(token.value)
     params = parse_params(token_stream)
@@ -205,6 +232,10 @@ def parse_node(token_stream: TokenStream):
     return node
     
 def parse_children(token_stream: TokenStream, indent_level: int) -> List[Node]:
+    '''
+    Recursively parses all children from the current position in the token stream at the given indent level
+    '''
+    
     nodes = []
     while token_stream.hasnext():
         try:
