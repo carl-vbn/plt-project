@@ -1,6 +1,6 @@
 import sys
 from collections import namedtuple
-from typing import Iterable, Generator, List
+from typing import Iterable, Generator, List, Tuple
 from ast import Node, print_tree
 
 Token = namedtuple('Token', ['type', 'value'])
@@ -22,6 +22,9 @@ class TokenStream(Iterable[Token]):
     
     def peek(self):
         return self.tokens[self.index]
+    
+    def skip(self, n=1):
+        self.index += n
     
     def back(self, n=1):
         self.index -= n
@@ -53,39 +56,38 @@ def next_indent_level(token_stream: TokenStream) -> int:
         
     return indent_level
 
-def parse_helper(token_stream: TokenStream, indent_level: int) -> List[Node]:
-    print(f'parse_helper({indent_level})')
-    
-    if not token_stream.hasnext():
-        return []
-    
-    id_tok = next(token_stream)
-    if id_tok.type != 'ID':
-        printerr(f'Expected ID token, got {id_tok}')
+def get_indent_level(token_stream: TokenStream) -> int:
+    return next_indent_level(token_stream.clone())
+            
+def parse_node(token_stream: TokenStream):
+    token = next(token_stream)
+    if token.type == 'ID':
+        return Node(token.value)
+    else:
+        printerr(f'Expected ID, got {token.type}')
         return None
     
-    nodes = [Node(id_tok.value)]
-    
-    if not token_stream.hasnext():
-        return nodes
-    
-    new_indent = next_indent_level(token_stream)
+def parse_children(token_stream: TokenStream, indent_level: int) -> List[Node]:
+    nodes = []
+    while token_stream.hasnext():
+        indent = get_indent_level(token_stream)
+        if indent == indent_level:
+            token_stream.skip(indent)
+            
+            node = parse_node(token_stream)
+            node.children = parse_children(token_stream, indent_level + 1)
+            nodes.append(node)
+        elif indent < indent_level:
+            break
+        else:
+            printerr(f'Unexpected indent')
+            break
         
-    indent_delta = new_indent - indent_level
-    print(f'indent_delta: {indent_delta}')
-    if indent_delta < 0:
-        return nodes
-    elif indent_delta == 0:
-        nodes.extend(parse_helper(token_stream, indent_level))
-    else: # indent_delta > 0
-        nodes[-1].children = parse_helper(token_stream, new_indent)
-        nodes.extend(parse_helper(token_stream, indent_level))
-    
     return nodes
             
 def parse(token_stream: TokenStream):
     root = Node('root')
-    root.children = parse_helper(token_stream, 0)
+    root.children = parse_children(token_stream, 0)
     print_tree(root)
     
 
