@@ -34,6 +34,9 @@ class TokenStream(Iterable[Token]):
     
     def clone(self):
         return TokenStream(self.tokens, self.index)
+    
+class ParsingError(Exception):
+    pass
 
 def parse_token_repr(token_repr: str) -> Token:
     # Convert <type, "value"> to Token(type, value)
@@ -58,14 +61,54 @@ def next_indent_level(token_stream: TokenStream) -> int:
 
 def get_indent_level(token_stream: TokenStream) -> int:
     return next_indent_level(token_stream.clone())
+           
+def expect(token_stream: TokenStream, token_type: str):
+    token = next(token_stream)
+    if token.type != token_type:
+        raise ParsingError(f'Expected {token_type}, got {token.type}')
+    
+    return token
+            
+def parse_params(token_stream: TokenStream) -> List[Node]:
+    params = []
+    
+    expect(token_stream, 'LPAR')
+    
+    while token_stream.hasnext():
+        param = Node('Parameter')
+        token = next(token_stream)
+        if token.type == 'RPAR':
+            break
+        elif token.type == 'ID':
+            param.children.append(Node(token.value))
+            expect(token_stream, 'COLON')
+            param.children.append(Node(next(token_stream).value))
+        else:
+            param.children.append(Node(token.value))
+        
+        params.append(param)
+        
+        next_token = next(token_stream)
+        if next_token.type == 'COMMA':
+            continue
+        elif next_token.type == 'RPAR':
+            break
+        else:
+            raise ParsingError(f'Expected COMMA or RPAR, got {next_token.type}')
+    
+    return params
             
 def parse_node(token_stream: TokenStream):
-    token = next(token_stream)
-    if token.type == 'ID':
-        return Node(token.value)
-    else:
-        printerr(f'Expected ID, got {token.type}')
-        return None
+    token = expect(token_stream, 'ID')
+    node = Node(token.value)
+    params = parse_params(token_stream)
+    
+    if len(params) > 0:
+        params_node = Node('parameters')
+        params_node.children = params
+        node.children.append(params_node)
+    
+    return node
     
 def parse_children(token_stream: TokenStream, indent_level: int) -> List[Node]:
     nodes = []
@@ -75,13 +118,16 @@ def parse_children(token_stream: TokenStream, indent_level: int) -> List[Node]:
             token_stream.skip(indent)
             
             node = parse_node(token_stream)
-            node.children = parse_children(token_stream, indent_level + 1)
+            children = parse_children(token_stream, indent_level + 1)
+            if len(children) > 0:
+                children_node = Node('children')
+                children_node.children = children
+                node.children.append(children_node)
             nodes.append(node)
         elif indent < indent_level:
             break
         else:
-            printerr(f'Unexpected indent')
-            break
+            raise ParsingError(f'Unexpected indent')
         
     return nodes
             
@@ -89,13 +135,12 @@ def parse(token_stream: TokenStream):
     root = Node('root')
     root.children = parse_children(token_stream, 0)
     print_tree(root)
-    
-
-def printerr(msg: str):
-    print(f':: PARSER ERROR :: {msg}')
         
 def main():
-    parse(TokenStream(read_token_stream()))
+    try:
+        parse(TokenStream(read_token_stream()))
+    except ParsingError as e:
+        print(f':: PARSER ERROR :: {e.message}')
     
     
 if __name__ == '__main__':
