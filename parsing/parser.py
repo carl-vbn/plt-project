@@ -68,23 +68,51 @@ def expect(token_stream: TokenStream, token_type: str):
         raise ParsingError(f'Expected {token_type}, got {token.type}')
     
     return token
-            
+
+def parse_param_value(token_stream: TokenStream) -> Node:
+    token = next(token_stream)
+    if token.type == 'ID':
+        # Param is new node
+        param_node = Node(token.value)
+        param_node.children = parse_params(token_stream)
+        return param_node
+    else:
+        return Node(token.value)
+
+def parse_param(token_stream: TokenStream) -> Node:
+    node = Node('AnonymousParameter')
+    token = next(token_stream)
+
+    if token.type == 'RPAR':
+        return None
+    elif token.type == 'ID':
+        next_token = next(token_stream)
+        if next_token.type == 'COLON':
+            node.name = 'NamedParameter'
+            node.children.append(Node(token.value))
+            node.children.append(parse_param_value(token_stream))
+        elif next_token.type == 'LPAR':
+            # Param is new node
+            token_stream.back(2) # Go back before the parameter started
+            node.children.append(parse_param_value(token_stream))
+        else:
+            raise ParsingError(f'Expected COLON or LPAR, got {next_token.type}')          
+        
+    else:
+        token_stream.back()
+        node.children.append(parse_param_value(token_stream))
+    
+    return node
+     
 def parse_params(token_stream: TokenStream) -> List[Node]:
     params = []
     
     expect(token_stream, 'LPAR')
     
     while token_stream.hasnext():
-        param = Node('Parameter')
-        token = next(token_stream)
-        if token.type == 'RPAR':
+        param = parse_param(token_stream)
+        if param is None:
             break
-        elif token.type == 'ID':
-            param.children.append(Node(token.value))
-            expect(token_stream, 'COLON')
-            param.children.append(Node(next(token_stream).value))
-        else:
-            param.children.append(Node(token.value))
         
         params.append(param)
         
@@ -94,7 +122,7 @@ def parse_params(token_stream: TokenStream) -> List[Node]:
         elif next_token.type == 'RPAR':
             break
         else:
-            raise ParsingError(f'Expected COMMA or RPAR, got {next_token.type}')
+            raise ParsingError(f'Expected COMMA or RPAR, got {next_token}')
     
     return params
             
@@ -140,7 +168,8 @@ def main():
     try:
         parse(TokenStream(read_token_stream()))
     except ParsingError as e:
-        print(f':: PARSER ERROR :: {e.message}')
+        # print(f':: PARSER ERROR :: {e}')
+        raise e
     
     
 if __name__ == '__main__':
