@@ -14,7 +14,7 @@
 * Colon (COLON)
 * Comma (COMMA)
 * Indentation (INDENT) - Note: This replaces the whitespace token we had for the last part
-* Arrow 
+* ARROW 
 * String Literal (LIT)
 
 # Context-Free Grammar

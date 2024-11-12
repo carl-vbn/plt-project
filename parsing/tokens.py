@@ -40,7 +40,7 @@ token_validators = {
         is_valid_start=lambda c: c == ',',
         is_valid_content=lambda c, tc: False
     ),
-    'Arrow': TokenValidator(
+    'ARROW': TokenValidator(
         is_valid_start=lambda c: c == '-',
         is_valid_content=lambda c, tc: c == '>' and tc == '-'
     ),

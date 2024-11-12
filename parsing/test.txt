@@ -14,6 +14,6 @@ Canvas(width: 100, height: 100, length: 5) # 100x100 px canvas with an animation
             Arrow(vector: (0, 25))
     
     # Draw x and y coordinates as text
-    CircularPath(center: (50, 50), r: 35, start: 0, end: 360, length: 5)# -> (x, y, p) # p is percentage (0-1)
+    CircularPath(center: (50, 50), r: 35, start: 0, end: 360, length: 5) -> (x, y, p) # p is percentage (0-1)
         Fill(Solid('white'))
         Latex('\textrm{X: }\eval{cos(p)} \textrm{Y: }\eval{sin(p)}', x: x, y: y, variables: {p: p, a: 'test'})

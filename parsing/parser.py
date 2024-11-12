@@ -181,6 +181,27 @@ def parse_node(token_stream: TokenStream):
         params_node.children = params
         node.children.append(params_node)
     
+    if token_stream.hasnext() and token_stream.peek().type == 'ARROW':
+        print('Found arrow')
+        # Exports
+        next(token_stream)
+        expect(token_stream, 'LPAR')
+        exports = []
+        while True:
+            export = expect(token_stream, 'ID')
+            exports.append(Node(export.value))
+            next_token = next(token_stream)
+            if next_token.type == 'COMMA':
+                continue
+            elif next_token.type == 'RPAR':
+                break
+            else:
+                raise ParsingError(f'Expected COMMA or RPAR, got {next_token.type}')
+            
+        exports_node = Node('exports')
+        exports_node.children = exports
+        node.children.append(exports_node)
+    
     return node
     
 def parse_children(token_stream: TokenStream, indent_level: int) -> List[Node]:
