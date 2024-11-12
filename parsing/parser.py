@@ -21,6 +21,9 @@ class TokenStream(Iterable[Token]):
         return token
     
     def peek(self):
+        if self.index >= len(self.tokens):
+            raise StopIteration
+        
         return self.tokens[self.index]
     
     def skip(self, n=1):
@@ -76,6 +79,20 @@ def parse_param_value(token_stream: TokenStream) -> Node:
         param_node = Node(token.value)
         param_node.children = parse_params(token_stream)
         return param_node
+    elif token.type == 'LPAR': # Tuple
+        tuple_node = Node('Tuple')
+        while True:
+            num = expect(token_stream, 'NUM')
+            tuple_node.children.append(Node(num.value))
+            
+            tok = next(token_stream)
+            if tok.type == 'COMMA':
+                continue
+            elif tok.type == 'RPAR':
+                break
+            else:
+                raise ParsingError(f'Expected COMMA or RPAR, got {tok.type}')
+        return tuple_node
     else:
         return Node(token.value)
 
@@ -129,6 +146,7 @@ def parse_params(token_stream: TokenStream) -> List[Node]:
 def parse_node(token_stream: TokenStream):
     token = expect(token_stream, 'ID')
     node = Node(token.value)
+    print('Parsing params for', token.value)
     params = parse_params(token_stream)
     
     if len(params) > 0:
@@ -141,7 +159,10 @@ def parse_node(token_stream: TokenStream):
 def parse_children(token_stream: TokenStream, indent_level: int) -> List[Node]:
     nodes = []
     while token_stream.hasnext():
-        indent = get_indent_level(token_stream)
+        try:
+            indent = get_indent_level(token_stream)
+        except StopIteration:
+            break
         if indent == indent_level:
             token_stream.skip(indent)
             

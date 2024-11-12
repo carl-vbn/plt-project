@@ -1,3 +1,5 @@
-Canvas(width: 10)
-    Rectangle(20, height: 30)
-        Test(Nested(width: 10, SuperNester("test")))
+Canvas(width: 100, height: 100)
+    Fill(Solid('black'))
+        Rectangle(width: 10, height: 5) 
+    Fill(Solid('blue'))
+        Rectangle(width: 50, height: 50, center:(40, 0))
