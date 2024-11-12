@@ -22,12 +22,11 @@
 
 
 ## Installation
-### TODO: Update from last part
 With Docker: 
-1. `cd` into this folder `lexical-analysis`
-2. Run `docker build --tag lexical-analyzer .` in this folder
-3. Run `docker run lexical-analyzer <input file name>`
+1. `cd` into this folder `parsing`
+2. Run `docker build -t scanner_and_parser .` in this folder
+3. Run `docker run scanner_and_parser <input file name>`
 
 Straight with Python (if Python is installed and the interpreter is in PATH):
 1. `cd` into this folder `lexical-analysis`
-2. Run `python main.py <input file name>` in this folder
+2. Run `python lexical_analyser.py <input file name> | python parser.py` in this folder

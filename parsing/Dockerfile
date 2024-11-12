@@ -10,5 +10,8 @@ COPY . /app
 # Install any needed dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run app.py when the container launches
-ENTRYPOINT ["python", "main.py"]
+# Set ENTRYPOINT with placeholders for arguments
+ENTRYPOINT ["sh", "-c", "python lexical_analyser.py $0 | python parser.py"]
+
+# Default CMD to provide a filename if none is specified
+CMD ["input.txt"]
