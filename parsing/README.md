@@ -17,6 +17,9 @@
 * Arrow 
 * String Literal (LIT)
 
+# Context-Free Grammar
+![CFG](./CFG-v2.png)
+
 
 ## Installation
 ### TODO: Update from last part
