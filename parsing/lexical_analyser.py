@@ -19,6 +19,10 @@ def tokenize(string: str):
                 # Ignore whitespace at the end of a line
                 token_type = None
                 token_val = None
+            elif token_type is not None: # Break token on newline
+                print(f'<{token_type}, "{token_val}">')
+                token_type = None
+                token_val = None
                 
             index += 1
             continue
