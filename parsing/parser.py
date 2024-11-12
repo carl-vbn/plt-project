@@ -77,7 +77,12 @@ def parse_param_value(token_stream: TokenStream) -> Node:
     if token.type == 'ID':
         # Param is new node
         param_node = Node(token.value)
-        param_node.children = parse_params(token_stream)
+        next_token = token_stream.peek()
+        if next_token.type == 'LPAR':
+            param_node.children = parse_params(token_stream)
+        elif next_token.type not in ['COMMA', 'RPAR']:
+            raise ParsingError(f'Expected LPAR, COMMA or RPAR, got {next_token.type}')
+        
         return param_node
     elif token.type == 'LPAR': # Tuple
         tuple_node = Node('Tuple')
@@ -93,6 +98,29 @@ def parse_param_value(token_stream: TokenStream) -> Node:
             else:
                 raise ParsingError(f'Expected COMMA or RPAR, got {tok.type}')
         return tuple_node
+    elif token.type == 'LBRACE': # Dict
+        dict_node = Node('Dict')
+        while True:
+            entry_node = Node('DictEntry')
+            key = expect(token_stream, 'ID')
+            entry_node.children.append(Node(key.value))
+            
+            expect(token_stream, 'COLON')
+            
+            value_node = parse_param_value(token_stream)
+            entry_node.children.append(value_node)
+            
+            dict_node.children.append(entry_node)
+            
+            tok = next(token_stream)
+            if tok.type == 'COMMA':
+                continue
+            elif tok.type == 'RBRACE':
+                break
+            else:
+                raise ParsingError(f'Expected COMMA or RBRACE, got {tok.type}')
+            
+        return dict_node
     else:
         return Node(token.value)
 
@@ -146,7 +174,6 @@ def parse_params(token_stream: TokenStream) -> List[Node]:
 def parse_node(token_stream: TokenStream):
     token = expect(token_stream, 'ID')
     node = Node(token.value)
-    print('Parsing params for', token.value)
     params = parse_params(token_stream)
     
     if len(params) > 0:
