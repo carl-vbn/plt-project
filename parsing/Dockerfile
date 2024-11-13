@@ -10,8 +10,8 @@ COPY . /app
 # Install any needed dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set ENTRYPOINT with placeholders for arguments
+# Run lexical analyzer on input file, pipe token stream into parser
 ENTRYPOINT ["sh", "-c", "python lexical_analyser.py $0 | python parser.py"]
 
-# Default CMD to provide a filename if none is specified
-CMD ["input.txt"]
+# Default input filename
+CMD ["test-1.txt"]

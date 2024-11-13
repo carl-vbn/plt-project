@@ -23,9 +23,10 @@
 
 ## Installation
 With Docker: 
-1. `cd` into this folder `parsing`
-2. Run `docker build -t scanner_and_parser .` in this folder
-3. Run `docker run scanner_and_parser <input file name>`
+1. Ensure Docker daemon is running
+2. `cd` into this folder `parsing`
+3. Run `docker build -t scanner_and_parser .` in this folder
+4. Run `docker run scanner_and_parser <input file name>`
 
 Straight with Python (if Python is installed and the interpreter is in PATH):
 1. `cd` into this folder `lexical-analysis`
