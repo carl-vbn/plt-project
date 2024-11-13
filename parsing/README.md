@@ -31,3 +31,6 @@ With Docker:
 Straight with Python (if Python is installed and the interpreter is in PATH):
 1. `cd` into this folder `lexical-analysis`
 2. Run `python lexical_analyser.py <input file name> | python parser.py` in this folder
+
+## Video Link
+https://youtu.be/ED1OrO2Rnno
