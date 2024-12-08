@@ -2,6 +2,7 @@ import xml
 import xml.etree
 import xml.etree.ElementTree
 from syntax_tree import Node
+from ast import literal_eval
     
 class SemanticError(Exception):
     pass
@@ -11,13 +12,14 @@ def semanticAssert(condition, message):
         raise SemanticError(message)
     
 class Context:
-    def __init__(self, fill_color, stroke_color, stroke_width):
+    def __init__(self, fill_color, stroke_color, stroke_width, frame):
         self.fill_color = fill_color
         self.stroke_color = stroke_color
         self.stroke_width = stroke_width
+        self.frame = frame
         
     def copy(self):
-        return Context(self.fill_color, self.stroke_color, self.stroke_width)
+        return Context(self.fill_color, self.stroke_color, self.stroke_width, self.frame)
 
 class Layer:
     def to_svg(self) -> xml.etree.ElementTree:
@@ -78,6 +80,48 @@ class Stroke(Layer):
             
         return g
     
+class Translate(Layer):
+    def __init__(self, x, y, start=None, end=None, length=None):
+        self.x = x
+        self.y = y
+        self.children = []
+        
+        if start is None and end is None and length is None:
+            self.start = None
+            self.length = None
+            self.animated = False
+        else:
+            self.animated = True
+            if start is not None and end is not None:
+                semanticAssert(length is None, 'Cannot specify both start and end and length')
+                self.start = start
+                self.length = end - start + 1
+                
+            elif start is not None and length is not None:
+                self.start = start
+                self.length = length
+                
+            elif end is not None and length is not None:
+                self.length = length
+                self.start = end - length + 1
+                
+            else:
+                raise SemanticError('Must specify two of start, end, and length, or none')
+        
+    def to_svg(self, ctx: Context) -> xml.etree.ElementTree:
+        if self.animated:
+            t = max(0, min(1, (ctx.frame - self.start) / self.length))
+            x = self.x * t
+            y = self.y * t
+            g = xml.etree.ElementTree.Element('g', transform=f'translate({x}, {y})')
+        else:
+            g = xml.etree.ElementTree.Element('g', transform=f'translate({self.x}, {self.y})')
+            
+        for child in self.children:
+            g.append(child.to_svg(ctx))
+            
+        return g
+    
 class Rectangle(Layer):
     def __init__(self, x, y, width, height):
         super().__init__()
@@ -93,7 +137,7 @@ class Rectangle(Layer):
         rect.set('stroke-width', str(ctx.stroke_width))
         return rect
     
-layer_classes = {c.__name__: c for c in [Canvas, Fill, Stroke, Rectangle]}
+layer_classes = {c.__name__: c for c in [Canvas, Fill, Stroke, Translate, Rectangle]}
 
 def get_layer_params(node):
     parameters_node = None
@@ -111,11 +155,11 @@ def get_layer_params(node):
         param_type = param_node.name
         if param_type == 'NamedParameter':
             param_name = param_node.children[0].name
-            param_value = param_node.children[1].name
+            param_value = literal_eval(param_node.children[1].name)
             named_parameters[param_name] = param_value
         else:
             param_val_node = param_node.children[0]
-            anonymous_parameters.append(param_val_node.name if len(param_val_node.children) == 0 else param_val_node)
+            anonymous_parameters.append(literal_eval(param_val_node.name) if len(param_val_node.children) == 0 else param_val_node)
             
     return named_parameters, anonymous_parameters
         
@@ -133,28 +177,6 @@ def get_layer_children(node):
     
 
 def parse_ast(root: Node) -> Layer:        
-    # canvasNode = root.children[0]
-    # semanticAssert(canvasNode.name == 'Canvas', 'Root node must be a Canvas')
-    
-    # parameters, _ = get_layer_params(canvasNode)
-    # semanticAssert('width' in parameters, 'Canvas must have a width parameter')
-    # semanticAssert('height' in parameters, 'Canvas must have a height parameter')
-    # semanticAssert('length' in parameters, 'Canvas must have a length parameter')
-    
-    # width = parameters['width']
-    # height = parameters['height']
-    # length = parameters['length']
-    
-    # canvas = Canvas(50, 50)
-    # fill = Fill('red')
-    # rect = Rectangle(10, 10, 20, 20)
-    # fill.children.append(rect)
-    # canvas.children.append(fill)
-    
-    # ctx = Context('black', 'black', 1)
-    # svg = canvas.to_svg(ctx)
-    # print(xml.etree.ElementTree.tostring(svg).decode())
-    
     semanticAssert(root.name in layer_classes, f'Unknown layer type: {root.name}')
     layer_class = layer_classes[root.name]
     
