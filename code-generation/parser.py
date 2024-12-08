@@ -1,7 +1,7 @@
 import sys
 from collections import namedtuple
 from typing import Iterable, Generator, List, Tuple
-from ast import Node, print_tree
+from syntax_tree import Node, print_tree
 
 Token = namedtuple('Token', ['type', 'value'])
 
@@ -261,7 +261,7 @@ def parse_children(token_stream: TokenStream, indent_level: int) -> List[Node]:
 def parse(token_stream: TokenStream):
     root = Node('root')
     root.children = parse_children(token_stream, 0)
-    print_tree(root)
+    return root
         
 def main():
     try:
@@ -269,7 +269,7 @@ def main():
     except ParsingError as e:
         # print(f':: PARSER ERROR :: {e}')
         raise e
-    
-    
+
+
 if __name__ == '__main__':
     main()

@@ -1,20 +1,11 @@
-# Some random garbage within a program
-!@#$%%R
-Can$!vas(wi":dth: 100, height: 100, length: 5) # 100x100 px canvas with an animation length of 5 seconds
-    # Black background
+# Very basic example
+Canvas(width: 50, height: 50, length: 10)
     Fill(Solid('black'))
-        Rectangle(width: 100, height: 100)
+        Rectangle(x: 0, y: 0, width: 50, height: 50)
 
-    # Circle
-    Stroke(Solid('white'))
-        Circle(x: 50", y: 50, r: 25) # Centered
-    
-    # Rotating arrow
-    Rotate(center: (50, 50), angle: 360, length: 5)
-        Fill(Solid('red'))
-            Arrow(vector: (0, 25))
-    
-    # Draw x and y coordinates as text
-    CircularPath(center: (50, 50), r: 35, start: 0, end: 360, length: 5) -> (x, y, p) # p is percentage (0-1)
-        Fill(Solid('white'))
-        Latex('\textrm{X: }\eval{cos(p)} \textrm{Y: }\eval{sin(p)}', x: x, y: y, variables: {p: p})
+    Fill(Solid('red'))
+        Stroke(Solid('white'), width: 2)
+            Rectangle(x: 0, y: 0, width: 25, height: 25)
+
+    Fill(Solid('blue'))
+        Rectangle(x: 25, y: 25, width: 25, height: 25)
