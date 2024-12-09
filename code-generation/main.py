@@ -5,21 +5,19 @@ from parser import parse, TokenStream, parse_token_repr
 from syntax_tree import print_tree
 from layers import parse_ast, Context, semanticAssert
 from xml.etree.ElementTree import tostring as xml_to_string
-import shutil
 
 def main():
-    if len(sys.argv) != 2:
-        print('Usage: python main.py <input_file>')
+    if len(sys.argv) != 3:
+        print('Usage: python main.py <input_file> <output_dir>')
         sys.exit(1)
         
     input_file = sys.argv[1]
     with open(input_file, 'r') as f:
         tokens = TokenStream(map(parse_token_repr, tokenize(f.read())))
     
-    # Prepare output directory
-    if os.path.exists('animation_output'):
-        shutil.rmtree('animation_output', ignore_errors=True)
-    os.makedirs('animation_output')
+    output_dir = sys.argv[2]
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     ast = parse(tokens)
     print_tree(ast)
