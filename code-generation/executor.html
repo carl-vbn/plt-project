@@ -15,19 +15,27 @@
     <img id="svg-display" src="" alt="SVG Animation Frame" />
 
   <script>
-    const totalFrames = 4; // number of frames
-    const msPerFrame = 200; // milliseconds per frame
+    const animationFolder = "animation_test";
+    let numFrames = 0;
+    let frameTime = 200;
+    
+    fetch(`${animationFolder}/config.txt`).then(response => {return response.text();})
+    .then((configText) => {
+          const [frames, time] = configText.trim().split('\n').map(Number);
+          numFrames = frames;
+          frameTime = time;
+          let currentFrame = 1;
+            const svgDisplay = document.getElementById('svg-display');
 
-    let currentFrame = 1;
-    const svgDisplay = document.getElementById('svg-display');
+            function playAnimation() {
+            svgDisplay.src = `${animationFolder}/${String(currentFrame).padStart(4, 0)}.svg`;
+            currentFrame = (currentFrame % numFrames) + 1;
+            setTimeout(playAnimation, frameTime);
+            }
 
-    function playAnimation() {
-      svgDisplay.src = `animation_test/${String(currentFrame).padStart(4, 0)}.svg`;
-      currentFrame = (currentFrame % totalFrames) + 1;
-      setTimeout(playAnimation, msPerFrame);
-    }
+            playAnimation();
+        })
 
-    playAnimation();
   </script>
 </body>
 </html>
