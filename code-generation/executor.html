@@ -12,13 +12,26 @@
   </style>
 </head>
 <body>
+    <input type="text" id="folder-input" placeholder="Enter animation folder" />
+    <button id="start-button">Start Animation</button>
+    <p></p>
     <img id="svg-display" src="" alt="SVG Animation Frame" />
 
   <script>
-    const animationFolder = "animation_output";
-    let numFrames = 0;
-    let frameTime = 200;
-    
+    let animationFolder = "";
+    const folderInput = document.getElementById('folder-input');
+    const startButton = document.getElementById('start-button');
+    let animationTimeout = null;
+    function stopAnimation() {
+      if (animationTimeout) {
+        clearTimeout(animationTimeout);
+        animationTimeout = null;
+      }
+
+    }
+    startButton.addEventListener('click', () => {
+    stopAnimation();
+    animationFolder = folderInput.value.trim();
     fetch(`${animationFolder}/config.txt`).then(response => {return response.text();})
     .then((configText) => {
           const [frames, time] = configText.trim().split('\n').map(Number);
@@ -30,11 +43,16 @@
             function playAnimation() {
             svgDisplay.src = `${animationFolder}/${String(currentFrame).padStart(4, 0)}.svg`;
             currentFrame = (currentFrame % numFrames) + 1;
-            setTimeout(playAnimation, frameTime);
+            animationTimeout = setTimeout(playAnimation, frameTime);
             }
 
             playAnimation();
         })
+    })
+    let numFrames = 0;
+    let frameTime = 200;
+    
+    
 
   </script>
 </body>
