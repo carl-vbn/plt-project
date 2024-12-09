@@ -81,9 +81,54 @@ class Stroke(Layer):
         return g
     
 class Translate(Layer):
-    def __init__(self, x, y, start=None, end=None, length=None):
+    def __init__(self, x, y, start=0, end=None, length=None):
         self.x = x
         self.y = y
+        self.children = []
+        
+        if start is None and end is None and length is None:
+            self.start = None
+            self.length = None
+            self.animated = False
+        else:
+            self.animated = True
+            if start is not None and end is not None:
+                semanticAssert(length is None, 'Cannot specify both start, end and length')
+                self.start = start
+                self.length = end - start + 1
+                
+            elif start is not None and length is not None:
+                self.start = start
+                self.length = length
+                
+            elif end is not None and length is not None:
+                self.length = length
+                self.start = end - length + 1
+                
+            else:
+                raise SemanticError('Missing temporal parameters')
+            
+            if length <= 1:
+                raise SemanticError('Length must be over 1')
+        
+    def to_svg(self, ctx: Context) -> xml.etree.ElementTree:
+        if self.animated:
+            t = max(0, min(1, (ctx.frame - self.start) / (self.length - 1)))
+            x = self.x * t
+            y = self.y * t
+            g = xml.etree.ElementTree.Element('g', transform=f'translate({x}, {y})')
+        else:
+            g = xml.etree.ElementTree.Element('g', transform=f'translate({self.x}, {self.y})')
+            
+        for child in self.children:
+            g.append(child.to_svg(ctx))
+            
+        return g
+    
+class Rotate(Layer):
+    def __init__(self, center, angle, start=0, end=None, length=None):
+        self.center = center
+        self.angle = angle
         self.children = []
         
         if start is None and end is None and length is None:
@@ -106,16 +151,18 @@ class Translate(Layer):
                 self.start = end - length + 1
                 
             else:
-                raise SemanticError('Must specify two of start, end, and length, or none')
+                raise SemanticError('Missing temporal parameters')
         
+            if length <= 1:
+                raise SemanticError('Length must be over 1')
+            
     def to_svg(self, ctx: Context) -> xml.etree.ElementTree:
         if self.animated:
-            t = max(0, min(1, (ctx.frame - self.start) / self.length))
-            x = self.x * t
-            y = self.y * t
-            g = xml.etree.ElementTree.Element('g', transform=f'translate({x}, {y})')
+            t = max(0, min(1, (ctx.frame - self.start) / (self.length - 1)))
+            angle = self.angle * t
+            g = xml.etree.ElementTree.Element('g', transform=f'rotate({angle}, {self.center[0]}, {self.center[1]})')
         else:
-            g = xml.etree.ElementTree.Element('g', transform=f'translate({self.x}, {self.y})')
+            g = xml.etree.ElementTree.Element('g', transform=f'rotate({self.angle}, {self.center[0]}, {self.center[1]})')
             
         for child in self.children:
             g.append(child.to_svg(ctx))
@@ -137,7 +184,13 @@ class Rectangle(Layer):
         rect.set('stroke-width', str(ctx.stroke_width))
         return rect
     
-layer_classes = {c.__name__: c for c in [Canvas, Fill, Stroke, Translate, Rectangle]}
+layer_classes = {c.__name__: c for c in [Canvas, Fill, Stroke, Translate, Rotate, Rectangle]}
+
+def eval_node(node):
+    if node.name == 'Tuple':
+        return tuple([eval_node(child) for child in node.children])
+    else:
+        return literal_eval(node.name)
 
 def get_layer_params(node):
     parameters_node = None
@@ -155,11 +208,11 @@ def get_layer_params(node):
         param_type = param_node.name
         if param_type == 'NamedParameter':
             param_name = param_node.children[0].name
-            param_value = literal_eval(param_node.children[1].name)
+            param_value = eval_node(param_node.children[1])
             named_parameters[param_name] = param_value
         else:
             param_val_node = param_node.children[0]
-            anonymous_parameters.append(literal_eval(param_val_node.name) if len(param_val_node.children) == 0 else param_val_node)
+            anonymous_parameters.append(eval_node(param_val_node) if len(param_val_node.children) == 0 else param_val_node)
             
     return named_parameters, anonymous_parameters
         
