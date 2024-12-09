@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINM</title>
+  <style>
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+</head>
+<body>
+    <img id="svg-display" src="" alt="SVG Animation Frame" />
+
+  <script>
+    const totalFrames = 4; // number of frames
+    const msPerFrame = 200; // milliseconds per frame
+
+    let currentFrame = 1;
+    const svgDisplay = document.getElementById('svg-display');
+
+    function playAnimation() {
+      svgDisplay.src = `animation_test/${String(currentFrame).padStart(4, 0)}.svg`;
+      currentFrame = (currentFrame % totalFrames) + 1;
+      setTimeout(playAnimation, msPerFrame);
+    }
+
+    playAnimation();
+  </script>
+</body>
+</html>
