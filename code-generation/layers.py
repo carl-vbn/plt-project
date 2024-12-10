@@ -324,6 +324,10 @@ class Latex(Layer):
             
         if ctx.fill_color is not None:
             text.set('fill', ctx.fill_color)
+            
+        if ctx.stroke_color is not None:
+            text.set('stroke', ctx.stroke_color)
+            text.set('stroke-width', str(ctx.stroke_width))
     
         text.text = processed_code
         text.set('font-size', str(self.size))
@@ -403,9 +407,12 @@ def get_layer_exports(node):
     return [child.name for child in exports_node.children]
     
 
-def parse_ast(root: Node) -> Layer:        
+def parse_ast(root: Node, subcall=False) -> Layer:        
     semanticAssert(root.name in layer_classes, f'Unknown layer type: {root.name}')
     layer_class = layer_classes[root.name]
+    
+    if subcall and layer_class == Canvas:
+        raise SemanticError('Canvas must be the top-level layer')
     
     named_parameters, anonymous_parameters = get_layer_params(root)
     children = get_layer_children(root)
@@ -416,6 +423,6 @@ def parse_ast(root: Node) -> Layer:
 
     layer = layer_class(*anonymous_parameters, **named_parameters)
     for child in children:
-        layer.children.append(parse_ast(child))
+        layer.children.append(parse_ast(child, subcall=True))
         
     return layer

@@ -1,0 +1,5 @@
+# Spinning text displaying angle
+Canvas(width: 100, height: 100, length: 100) # 100x100 px canvas
+    CircularPath(center: (50, 50), r: 35, length: 100) -> (x, y, p, a)
+        Fill(Solid('white'))
+            Latex('\textrm{Angle: }\eval{a}', x: x, y: y)

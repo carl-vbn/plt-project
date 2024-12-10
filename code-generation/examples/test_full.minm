@@ -1,4 +1,4 @@
-# Black background
+# Covers full range of MINM features
 Canvas(width: 200, height: 100, length: 100) # 100x100 px canvas with an animation length of 5 seconds
     # Black background
     Fill(Solid('black'))

@@ -1,0 +1,5 @@
+# Nested canvas is not allowed -> Semantic error
+Canvas(width: 50, height: 50, length: 10)
+    Canvas(width: 50, height: 50, length: 10)
+        Fill(Solid('black'))
+            Rectangle(x: 0, y: 0, width: 50, height: 50)
