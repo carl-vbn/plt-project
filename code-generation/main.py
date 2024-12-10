@@ -3,8 +3,9 @@ import os
 from lexical_analyser import tokenize
 from parser import parse, TokenStream, parse_token_repr
 from syntax_tree import print_tree
-from layers import parse_ast, Context, semanticAssert
+from layers import parse_ast, Context, semanticAssert, SemanticError
 from xml.etree.ElementTree import tostring as xml_to_string
+import optimizer
 
 def main():
     if len(sys.argv) != 3:
@@ -20,7 +21,7 @@ def main():
         os.makedirs(output_dir)
 
     ast = parse(tokens)
-    print_tree(ast)
+    # print_tree(ast)
     
     semanticAssert(len(ast.children) == 1, 'Multiple top-level layers')
     
@@ -32,7 +33,7 @@ def main():
     
     for frame in range(canvas.length):
         base_context.frame = frame
-        svg = canvas.to_svg(base_context)
+        svg = optimizer.optimize_svg(canvas.to_svg(base_context))
         
         with open(f'{output_dir}/{str(frame + 1).zfill(4)}.svg', 'w') as f:
             # Write MIML comment
@@ -45,4 +46,8 @@ def main():
         f.write(f'{canvas.length}\n200')
     
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except SemanticError as e:
+        print("Semantic Error:", e)
+        sys.exit(1)
