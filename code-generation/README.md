@@ -24,10 +24,10 @@
 ## Installation
 ### TODO: Update from last part
 With Docker: 
-1. `cd` into this folder `lexical-analysis`
-2. Run `docker build --tag lexical-analyzer .` in this folder
+1. `cd` into this folder `code-generation`
+2. Run `docker build --tag code-generation .` in this folder
 3. Run `docker run -v $(pwd):/app code-generation <input file name> <output animation folder name>`
 
 Straight with Python (if Python is installed and the interpreter is in PATH):
-1. `cd` into this folder `lexical-analysis`
-2. Run `python main.py <input file name>` in this folder
+1. `cd` into this folder `code-generation`
+2. Run `python main.py <input file name> <output animation folder name>` in this folder
