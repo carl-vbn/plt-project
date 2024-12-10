@@ -1,6 +1,0 @@
-# This is a test of the arrow token and other identifier/character formats
--
-Color(5)
-->
-Canvas()
---

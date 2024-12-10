@@ -1,0 +1,13 @@
+# Very basic example
+Canvas(width: 50, height: 50, length: 10)
+    Fill(Solid('black'))
+        Rectangle(x: 0, y: 0, width: 50, height: 50)
+
+    Fill(Solid('red'))
+        Rotate(center: (25, 25), angle: 360, length: 5)
+            Stroke(Solid('white'), width: 2)
+                Rectangle(x: 0, y: 0, width: 25, height: 25)
+
+    Fill(Solid('blue'))
+        Translate(x: 25, y: 0, start: 0, length: 10)
+            Rectangle(x: 0, y: 25, width: 25, height: 25)
