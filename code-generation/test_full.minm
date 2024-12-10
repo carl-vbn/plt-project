@@ -1,0 +1,19 @@
+# Black background
+Canvas(width: 200, height: 100, length: 100) # 100x100 px canvas with an animation length of 5 seconds
+    # Black background
+    Fill(Solid('black'))
+        Rectangle(x:0, y: 0, width: 200, height: 100)
+
+    # Circle
+    Stroke(Solid('white'))
+        Circle(x: 50, y: 50, r: 25) # Centered
+    
+    # Rotating arrow
+    Rotate(center: (50, 50), angle: 360, length: 100)
+        Stroke(Solid('red'))
+            Arrow(origin: (50, 50), vector: (25, 0))
+    
+    # Draw x and y coordinates as text
+    CircularPath(center: (50, 50), r: 35, length: 100) -> (x, y, p) # p is percentage (0-1)
+        Fill(Solid('white'))
+            Latex('\textrm{X: }\eval{cos(p)} \textrm{Y: }\eval{sin(p)}', x: x, y: y)
