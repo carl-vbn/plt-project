@@ -1,4 +1,4 @@
-# Parser
+# Code Generation
 
 ## Team Members
 * Carl von Bonin (cv2546)
@@ -7,7 +7,13 @@
 ## Setup using Docker
 ### Running the code generation
 1. `cd` into `code-generation` (this folder)
-2. Run `./run.sh <input file name> <output directory name>`
+2. Either: 
+   1. Run `./run.sh <input file name> <output directory name>`
+
+3. Or: 
+   1. Run `docker build -t code-generation .`
+   2. Run `docker run -it --rm -v .:/app code-generation:latest <input file name> <output animation folder name>`
+      1. For example, `docker run -it --rm -v .:/app code-generation:latest examples/test_full.minm full_anim`
 
 ### Visualizing the animation
 1. Still in the `code-generation` folder, run `./server.sh`
@@ -28,3 +34,7 @@
 3. Navigate to `http://localhost:8000/executor.html` in your browser
 4. Type in the name of the output directory you specified in step 2 of the previous section
 5. Click `Start Animation`
+
+
+### Video Link
+https://youtu.be/3NUWdBl_uIc
