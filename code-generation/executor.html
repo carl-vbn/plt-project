@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINM</title>
+  <style>
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+</head>
+<body>
+    <input type="text" id="folder-input" placeholder="Enter animation folder" />
+    <button id="start-button">Start Animation</button>
+    <p></p>
+    <img id="svg-display" src="" alt="SVG Animation Frame" />
+
+  <script>
+    let animationFolder = "";
+    const folderInput = document.getElementById('folder-input');
+    const startButton = document.getElementById('start-button');
+    let animationTimeout = null;
+    function stopAnimation() {
+      if (animationTimeout) {
+        clearTimeout(animationTimeout);
+        animationTimeout = null;
+      }
+
+    }
+    startButton.addEventListener('click', () => {
+    stopAnimation();
+    animationFolder = folderInput.value.trim();
+    fetch(`${animationFolder}/config.txt`).then(response => {return response.text();})
+    .then((configText) => {
+          const [frames, time] = configText.trim().split('\n').map(Number);
+          numFrames = frames;
+          frameTime = time;
+          let currentFrame = 1;
+            const svgDisplay = document.getElementById('svg-display');
+
+            function playAnimation() {
+            svgDisplay.src = `${animationFolder}/${String(currentFrame).padStart(4, 0)}.svg`;
+            currentFrame = (currentFrame % numFrames) + 1;
+            animationTimeout = setTimeout(playAnimation, frameTime);
+            }
+
+            playAnimation();
+        })
+    })
+    let numFrames = 0;
+    let frameTime = 200;
+    
+    
+
+  </script>
+</body>
+</html>
