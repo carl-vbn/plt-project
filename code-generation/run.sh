@@ -1,2 +1,4 @@
-docker build -t lexical-analysis .
-docker run -t lexical-analysis $1
+docker build -t code-generation .
+docker run -it --rm \
+    -v .:/app \
+    code-generation:latest $*

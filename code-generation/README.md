@@ -4,30 +4,14 @@
 * Carl von Bonin (cv2546)
 * Adheesh Kadiresan (ak4907)
 
-## Token types
-* Identifier (ID)
-* Left parenthesis (LPAR)
-* Right parenthesis (RPAR)
-* Left brace (LBRACE)
-* Right brace (RBRACE)
-* Number (NUM)
-* Colon (COLON)
-* Comma (COMMA)
-* Indentation (INDENT) - Note: This replaces the whitespace token we had for the last part
-* ARROW 
-* String Literal (LIT)
+## Running the code generation and 
+1. `cd` into `code-generation` (this folder)
+2. Run `./run.sh <input file name> <output directory name>`
 
-# Context-Free Grammar
-![CFG](./CFG-v2.png)
+*Alternatively, you can run the main.py file directly with Python*
 
-
-## Installation
-### TODO: Update from last part
-With Docker: 
-1. `cd` into this folder `lexical-analysis`
-2. Run `docker build --tag lexical-analyzer .` in this folder
-3. Run `docker run lexical-analyzer <input file name>`
-
-Straight with Python (if Python is installed and the interpreter is in PATH):
-1. `cd` into this folder `lexical-analysis`
-2. Run `python main.py <input file name>` in this folder
+## Visualizing the animation
+1. Still in the `code-generation` folder, run `./server.sh`
+2. Navigate to `http://localhost:8000/executor.html` in your browser
+3. Type in the name of the output directory you specified in step 2 of the previous section
+4. Click `Start Animation`
